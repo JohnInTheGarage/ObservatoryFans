@@ -14,4 +14,3 @@ Summer cooling (untested till Summer arrives).
 |gpio26     |SDA - AHT20 outside|
 |gpio27     |SCL - AHT20 outside|
 |gpio21     |SDA - Relay input|
-|gpio17     |SCL   AHT20 inside|
