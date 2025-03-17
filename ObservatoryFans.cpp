@@ -3,7 +3,6 @@
 #include "hardware/i2c.h"
 #include "libraries/AHT20/AHT20.h"
 
-
 // I2C defines
 #define SDA_INSIDE 16
 #define SCL_INSIDE 17
@@ -20,6 +19,7 @@ int minuteCount;
 //===================
 void oneMinFlash(){
 	
+	// Show its alive and limit the readings to once per minute
 	for (short sec =0; sec < 59; sec++) {
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
         sleep_ms(500);
@@ -69,7 +69,7 @@ void setFans(float inTemp, float inRH, float outTemp, float outRH) {
 	}
 	
 
-	/*---- allow a 10-minute break if fans are on a long time. ---*/
+	/*---- allow a 1-minute break if fans are on a long time. ---*/
 	
 	if (fansPrevious == fansActive) {
 		// if fan status unchanged since last time
@@ -82,14 +82,7 @@ void setFans(float inTemp, float inRH, float outTemp, float outRH) {
 				minuteCount = 0;
 				fansActive = false;
 			}
-		} else {
-			
-			if (minuteCount > 9) {
-				// if the fans have been off for 10 mins
-				// reset minute counter
-				minuteCount = 0;
-			}
-		}
+		} 
 	}
 
 	fansPrevious = fansActive;
@@ -124,8 +117,13 @@ int main(){
 
         setFans(insideTemp, insideRhum, outsideTemp, outsideRhum);
 		
+		// When connected via usb these minute-by-minute data points
+		// can be collected into a .csv file for use in creating graphs;
+		// see Related/ReadObsFans directory.
+
 		printf("%.1f, %.1f, %.1f, %.1f, %d\n", 
 			insideTemp, insideRhum, outsideTemp, outsideRhum, fansActive * 30);
+			// active * 30 is just to lift it off the bottom of the graph.
 	}
 }
 
